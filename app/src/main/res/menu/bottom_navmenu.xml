@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:title="Trang chủ" android:icon="@drawable/logo" android:id="@+id/home" />
+    <item android:title="Chuyển khoản" android:icon="@drawable/moneycard" android:id="@+id/money" />
+    <item android:title="QR" android:icon="@drawable/qrscan" android:id="@+id/qr" />
+    <item android:title="Tra cứu" android:icon="@drawable/preview" android:id="@+id/search" />
+    <item android:title="Cài đặt" android:icon="@drawable/settings" android:id="@+id/setting" />
+</menu>
