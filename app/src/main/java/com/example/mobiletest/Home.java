@@ -26,7 +26,7 @@ public class Home extends AppCompatActivity {
                     replaceFragment(new HomeFragment(user));
                     break ;
                 case R.id.money:
-                    replaceFragment(new PayFragment());
+                    replaceFragment(new PayFragment(user));
                     break;
                 case R.id.search:
                     replaceFragment(new HistoryFragment(user));

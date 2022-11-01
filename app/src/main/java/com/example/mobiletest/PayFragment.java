@@ -2,11 +2,17 @@ package com.example.mobiletest;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,8 +30,11 @@ public class PayFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public PayFragment() {
+    static User userrr  ;
+
+    public PayFragment(User user) {
         // Required empty public constructor
+        this.userrr = user ;
     }
 
     /**
@@ -38,7 +47,7 @@ public class PayFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static PayFragment newInstance(String param1, String param2) {
-        PayFragment fragment = new PayFragment();
+        PayFragment fragment = new PayFragment(userrr);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,4 +70,25 @@ public class PayFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_pay, container, false);
     }
+
+    private void replaceFragment(Fragment fragment){
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_main,fragment);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        LinearLayout linearLayout = view.findViewById(R.id.bankingBtn);
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                replaceFragment(new Banking(userrr));
+            }
+        });
+
+    }
+
 }

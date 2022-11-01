@@ -1,10 +1,13 @@
 package com.example.mobiletest;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -21,6 +24,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HistoryFragment#newInstance} factory method to
@@ -28,8 +35,8 @@ import java.util.ArrayList;
  */
 public class HistoryFragment extends Fragment {
     RecyclerView recyclerView;
-    ArrayList<BankTransfer> arrBankTransfer ;
     static User user ;
+    BankAdapter bankAdapter ;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,6 +45,7 @@ public class HistoryFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    static ArrayList<BankTransfer> arrayBankTransfer = new ArrayList<BankTransfer>() ;
 
     public HistoryFragment(User userPass) {
         // Required empty public constructor
@@ -62,6 +70,8 @@ public class HistoryFragment extends Fragment {
         return fragment;
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,44 +80,91 @@ public class HistoryFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        ApiServices.apiservices.getAllBankTransfer(new ResquestGetAllTransfer(user.getPhone())).enqueue(new Callback<ResponBankTransfer>() {
+            @Override
+            public void onResponse(Call<ResponBankTransfer> call, Response<ResponBankTransfer> response) {
+                arrayBankTransfer = response.body().getArrBank() ;
+                recyclerView = getView().findViewById(R.id.review);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerView.setHasFixedSize(true);
 
+
+                 bankAdapter = new BankAdapter(getContext(), arrayBankTransfer, new BankAdapter.ItemClickListener() {
+                    @Override
+                    public void onItemClick(BankTransfer details) {
+                        replaceFragment(new Detail(details, user));
+                    }
+                }, new BankAdapter.ItemLongClickListener() {
+                    @Override
+                    public void longItemClick(Integer index) {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+                        alertDialog.setTitle("Thong bao");
+                        alertDialog.setMessage("Ban co chac chan muon xoa khong");
+                        alertDialog.setPositiveButton("Co", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ArrayList<BankTransfer> dataBankTransfer = new ArrayList<>();
+                                String idDelete = "";
+                                for(int position = 0; position < bankAdapter.getBankTransferArrayList().size(); position++) {
+                                    if(position != index){
+                                        dataBankTransfer.add(bankAdapter.getBankTransferArrayList().get(position));
+                                    }else{
+                                        idDelete = bankAdapter.getBankTransferArrayList().get(position).get_id();
+                                    }
+                                }
+                                bankAdapter.setBankTransferArrayList(dataBankTransfer);
+                                bankAdapter.notifyDataSetChanged();
+                                ApiServices.apiservices.deleteHistory(new BankTransfer(idDelete)).enqueue(new Callback<BankTransfer>() {
+                                    @Override
+                                    public void onResponse(Call<BankTransfer> call, Response<BankTransfer> response) {
+                                        Toast.makeText(getContext(), "Xoa thanh cong", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<BankTransfer> call, Throwable t) {
+
+                                    }
+                                });
+                            }
+                        });
+                        alertDialog.setNegativeButton("Khong", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                alertDialog.setCancelable(true);
+                            }
+                        });
+                        alertDialog.show();
+                    }
+                }, user);
+                recyclerView.setAdapter(bankAdapter);
+                bankAdapter.notifyDataSetChanged();
+                recyclerView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<ResponBankTransfer> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_history, container, false);
-
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        arrBankTransfer = new ArrayList<>();
-        arrBankTransfer.add(new BankTransfer("6-8-2022",30.000,30.000 ,12));
-        arrBankTransfer.add(new BankTransfer("16-8-2022",50.000,80.000 ,13));
-        arrBankTransfer.add(new BankTransfer("26-9-2022",20.000,100.000 ,14));
-        arrBankTransfer.add(new BankTransfer("4-10-2022",100.000,200.000 ,15));
-        arrBankTransfer.add(new BankTransfer("5-10-2022",300.000,500.000 ,16));
-        arrBankTransfer.add(new BankTransfer("5-10-2022",500.000,100000.0 ,17));
-        recyclerView = view.findViewById(R.id.review);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
-        BankAdapter bankAdapter = new BankAdapter(getContext(), arrBankTransfer, new BankAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(BankTransfer details) {
-                replaceFragment(new Detail(details , user));
-            }
-        });
-        recyclerView.setAdapter(bankAdapter);
-        bankAdapter.notifyDataSetChanged();
-        recyclerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
     }
     private void replaceFragment(Fragment fragment){
        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

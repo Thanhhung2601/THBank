@@ -3,46 +3,93 @@ package com.example.mobiletest;
 import java.io.Serializable;
 
 public class BankTransfer implements Serializable {
-    private String date ;
-    private Double money , remainder;
-    private Integer numberId ;
+    private String sender , recipient , infomationBank , _id , createdAt , updatedAt ;
+    private Double moneyBank ;
+    private Integer __v;
 
-    public BankTransfer(String date, Double money, Double remainder, Integer numberId) {
-        this.date = date;
-        this.money = money;
-        this.remainder = remainder;
-        this.numberId = numberId;
+
+
+    public BankTransfer(String sender, String recipient, String infomationBank, Double moneyBank) {
+        this.sender = sender;
+        this.recipient = recipient;
+        this.infomationBank = infomationBank;
+        this.moneyBank = moneyBank;
+    }
+    public BankTransfer(String _id , String sender, String recipient, String infomationBank, Double moneyBank , String createdAt , String updatedAt) {
+        this._id = _id ;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.infomationBank = infomationBank;
+        this.moneyBank = moneyBank;
+        this.createdAt = createdAt ;
+        this.updatedAt = updatedAt ;
     }
 
-    public String getDate() {
-        return date;
+    public BankTransfer(String _id){
+        this._id = _id;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public String getSender() {
+        return sender;
     }
 
-    public Double getMoney() {
-        return money;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
-    public void setMoney(Double money) {
-        this.money = money;
+    public String getRecipient() {
+        return recipient;
     }
 
-    public Double getRemainder() {
-        return remainder;
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
     }
 
-    public void setRemainder(Double remainder) {
-        this.remainder = remainder;
+    public String getInfomationBank() {
+        return infomationBank;
     }
 
-    public Integer getNumberId() {
-        return numberId;
+    public void setInfomationBank(String infomationBank) {
+        this.infomationBank = infomationBank;
     }
 
-    public void setNumberId(Integer numberId) {
-        this.numberId = numberId;
+    public Double getMoneyBank() {
+        return moneyBank;
+    }
+
+    public void setMoneyBank(Double moneyBank) {
+        this.moneyBank = moneyBank;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Integer get__v() {
+        return __v;
+    }
+
+    public void set__v(Integer __v) {
+        this.__v = __v;
     }
 }

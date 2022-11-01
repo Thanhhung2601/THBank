@@ -6,10 +6,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.logging.Logger;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,8 +25,8 @@ import android.widget.TextView;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
-    TextView username ,phoneNumber;
-    static User dataUserr ;
+    TextView username ,phoneNumber , moenyHomee;
+    static User dataUserr =null ;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -59,6 +67,8 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+
+
     }
 
     @Override
@@ -73,7 +83,20 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         username = view.findViewById(R.id.userNameHome);
         phoneNumber = view.findViewById(R.id.phoneNumber);
-        username.setText(dataUserr.getUserName());
-        phoneNumber.setText(dataUserr.getPhone());
-    }
+        moenyHomee = view.findViewById(R.id.moneyHome);
+        Log.d("ApiUrl = ", "Re-render");
+            ApiServices.apiservices.getUserById(dataUserr).enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    dataUserr = response.body();
+                    username.setText(dataUserr.getUserName());
+                    phoneNumber.setText(dataUserr.getPhone());
+                    moenyHomee.setText(dataUserr.getMoney().toString());
+                }
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+
+                }
+            });
+        }
 }

@@ -78,10 +78,9 @@ public class Detail extends Fragment {
         sothamchieu = view.findViewById(R.id.thamChieuDetail);
         phone = view.findViewById(R.id.phoneDetail);
         userName = view.findViewById(R.id.userNameDetail);
-        date.setText(bankData.getDate());
-        sotien.setText(Double.toString(bankData.getMoney()));
-        sothamchieu.setText( Integer.toString(bankData.getNumberId()));
-
+        date.setText(bankData.getCreatedAt());
+        sotien.setText(Double.toString(bankData.getMoneyBank()));
+        sothamchieu.setText(bankData.get_id());
         userName.setText(user.getUserName());
         phone.setText(user.getPhone());
 

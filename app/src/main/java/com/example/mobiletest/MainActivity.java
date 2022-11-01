@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<User> users = new ArrayList<User>();
@@ -34,24 +39,38 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void handleLogin(View view){
-        users.forEach((user) -> {
-            if(user.getPhone().equals(newUser.getPhone())){
-                userFinded = user ;
+        handlePost();
+    }
+
+    public void handlePost (){
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Wait while loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        ApiServices.apiservices.signIn(new User("",userName.getText().toString() ,password.getText().toString() , 0.0)).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User userRes = response.body();
+                progressDialog.dismiss();
+                if(userRes != null){
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this,Home.class) ;
+                    intent.putExtra("userData" , userRes);
+                    startActivity(intent);
+                    Toast.makeText(MainActivity.this, "login success", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(MainActivity.this, "SomeThing Wrong Please check your userName and password", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Fail call API", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             }
         });
-        if(userFinded != null){
-            if(userFinded.getPassword().equals(password.getText().toString())){
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this,Home.class) ;
-                intent.putExtra("userData" , userFinded);
-                startActivity(intent);
-                Toast.makeText(this, "Login success", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this, "Password wrong", Toast.LENGTH_SHORT).show();
-            }
-        }else {
-            Toast.makeText(this, "Not found user !", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override

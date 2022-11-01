@@ -2,11 +2,16 @@ package com.example.mobiletest;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Register extends AppCompatActivity {
     TextView phone , userName , password , confirpassword ;
@@ -36,15 +41,30 @@ public class Register extends AppCompatActivity {
     }
 
     public void handleRegister(View view){
+        ProgressDialog progressDialog = new ProgressDialog(this);
         String phoneValue = phone.getText().toString();
         String passwordlValue = password.getText().toString();
         String userNameValue = userName.getText().toString();
         String confirmPasswordlValue = confirpassword.getText().toString();
-        if(passwordlValue.equals(confirmPasswordlValue)){
-            newUser = new User(phoneValue , userNameValue , passwordlValue);
-            Toast.makeText(this, "Register success", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(this, "Password not correct", Toast.LENGTH_SHORT).show();
-        }
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Wait while loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        ApiServices.apiservices.signUp(new User(phoneValue , userNameValue , passwordlValue , confirmPasswordlValue , 0.0)).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User userRes = response.body();
+                progressDialog.dismiss();
+                if(userRes != null){
+                    Toast.makeText(Register.this, "Register success", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(Register.this, "Register Fail", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
